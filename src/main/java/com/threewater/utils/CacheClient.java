@@ -2,6 +2,7 @@ package com.threewater.utils;
 
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -82,7 +83,7 @@ public class CacheClient {
         }
         // 4. 命中，需要把json反序列化为对象
         RedisData redisData = JSONUtil.toBean(json, RedisData.class);
-        R r = JSONUtil.toBean((String) redisData.getData(), type);
+        R r = JSONUtil.toBean((JSONObject) redisData.getData(), type);
         LocalDateTime expireTime = redisData.getExpireTime();
         // 5. 判断是否过期
         if (expireTime.isAfter(LocalDateTime.now())) {
