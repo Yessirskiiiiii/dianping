@@ -11,4 +11,6 @@ public class RedisConstants {
     public static final Long CACHE_NULL_TTL = 2L;
 
     public static final String CACHE_LOCK_KEY = "lock:shop:";
+
+    public static final String SECKILL_STOCK_KEY = "seckill:stock:";
 }
