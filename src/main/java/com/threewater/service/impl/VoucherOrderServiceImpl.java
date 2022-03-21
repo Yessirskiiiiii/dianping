@@ -21,6 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * <p>
@@ -51,6 +54,10 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         SECKILL_SCRIPT.setResultType(Long.class);
     }
 
+    // 定义一个阻塞队列
+    private final BlockingQueue<VoucherOrder> orderTasks = new ArrayBlockingQueue<>(1024 * 1024);
+    // 定义线程池
+
     @Override
     public Result seckillVoucher(Long voucherId) {
         Long userId = UserHolder.getUser().getId();
@@ -63,8 +70,17 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
             return Result.fail(r == 1 ? "库存不足" : "不能重复下单");
         }
         // 2.2 为0，有购买资格，把下单信息保存到阻塞队列
+        VoucherOrder voucherOrder = new VoucherOrder();
+        // 2.3 订单id
         long orderId = redisIdWorker.nextId("order");
-        // TODO 保存阻塞队列
+        voucherOrder.setId(orderId);
+        // 2.4 用户id
+        voucherOrder.setUserId(userId);
+        // 2.5 代金券id
+        voucherOrder.setVoucherId(voucherId);
+        // 2.6 放入阻塞队列
+        orderTasks.add(voucherOrder);
+
         return Result.ok();
     }
 
