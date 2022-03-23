@@ -43,6 +43,7 @@ public class Blog implements Serializable {
     /**
      * 用户图标
      */
+    // 代表当前字段不在表里面
     @TableField(exist = false)
     private String icon;
     /**
