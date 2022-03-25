@@ -1,9 +1,11 @@
 package com.threewater.controller;
 
 
+import cn.hutool.core.bean.BeanUtil;
 import com.threewater.dto.LoginFormDTO;
 import com.threewater.dto.Result;
 import com.threewater.dto.UserDTO;
+import com.threewater.entity.User;
 import com.threewater.entity.UserInfo;
 import com.threewater.service.IUserInfoService;
 import com.threewater.service.IUserService;
@@ -85,5 +87,18 @@ public class UserController {
         info.setUpdateTime(null);
         // 返回
         return Result.ok(info);
+    }
+
+    // UserController 根据id查询用户
+    @GetMapping("/{id}")
+    public Result queryUserById(@PathVariable("id") Long userId){
+        // 查询详情
+        User user = userService.getById(userId);
+        if (user == null) {
+            return Result.ok();
+        }
+        UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
+        // 返回
+        return Result.ok(userDTO);
     }
 }
